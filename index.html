@@ -9,8 +9,8 @@
     *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial}
     .wrap{max-width:760px;margin:0 auto;padding:20px}
     h1{font-size:20px;margin:0 0 10px}
-    .card{background:var(--card);border:1px solid var(--ring);border-radius:12px;padding:14px}
-    label{display:block;margin:10px 0 4px;color:var(--muted)}
+    .card{background:var(--card);border:1px solid var(--ring);border-radius:12px;padding:14px;margin-bottom:14px}
+    label{display:block;margin:10px 0 4px;color:#94a3b8}
     input,select,button,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--ring);background:#0a1020;color:var(--text)}
     button{cursor:pointer;font-weight:700}
     .btn{background:var(--primary);color:#06213a;border:none;margin-top:14px}
@@ -23,6 +23,13 @@
     .err{border-color:var(--err)}
     footer{margin:16px 0;text-align:center;color:var(--muted)}
     .pill{display:inline-block;border:1px solid var(--ring);border-radius:999px;padding:3px 8px;font-size:12px}
+    .ticket{display:none}
+    .ticket.show{display:block}
+    .title{font-weight:700;font-size:16px;margin-bottom:6px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    @media (max-width:540px){ .grid{grid-template-columns:1fr} }
+    .subtle{font-size:12px;color:#94a3b8}
+    a.btnlink{display:inline-block;padding:10px;border-radius:8px;border:1px solid var(--ring);text-decoration:none;color:var(--text)}
   </style>
 </head>
 <body>
@@ -66,11 +73,25 @@
 
       <div class="btn-row">
         <button class="btn" id="submitBtn" type="submit">Hantar</button>
-        <button type="button" id="copyWa">Salin WhatsApp</button>
-</div>
+        <a class="btnlink" id="waLink" target="_blank" rel="noopener">Hantar WhatsApp</a>
+        <button type="button" id="addCal">Tambah ke Calendar (.ics)</button>
+      </div>
 
       <div id="status" class="status"></div>
     </form>
+
+    <div id="ticket" class="card ticket">
+      <div class="title">Kad Temujanji</div>
+      <div class="grid">
+        <div><span class="subtle">Nama</span><br><b id="t_nama"></b></div>
+        <div><span class="subtle">Telefon</span><br><b id="t_tel"></b></div>
+        <div><span class="subtle">Tarikh</span><br><b id="t_tarikh"></b></div>
+        <div><span class="subtle">Masa</span><br><b id="t_masa"></b></div>
+        <div><span class="subtle">Lokasi</span><br><b id="t_lokasi"></b></div>
+        <div><span class="subtle">Bil/Umur</span><br><b id="t_bilumur"></b></div>
+      </div>
+      <p class="help" style="margin-top:10px">Sila hadir 10 minit lebih awal. Bawa MyKid anak & kad kesihatan (jika ada).</p>
+    </div>
 
     <footer>powered by <strong>PKD Kuala Terengganu</strong></footer>
   </div>
@@ -94,8 +115,17 @@
     const masa = document.getElementById('masa');
     const statusBox = document.getElementById('status');
     const submitBtn = document.getElementById('submitBtn');
-    const copyWaBtn = document.getElementById('copyWa');
-// === Util ===
+    const waLink = document.getElementById('waLink');
+    const addCalBtn = document.getElementById('addCal');
+    const ticket = document.getElementById('ticket');
+    const t_nama = document.getElementById('t_nama');
+    const t_tel = document.getElementById('t_tel');
+    const t_tarikh = document.getElementById('t_tarikh');
+    const t_masa = document.getElementById('t_masa');
+    const t_lokasi = document.getElementById('t_lokasi');
+    const t_bilumur = document.getElementById('t_bilumur');
+
+    // === Util ===
     const HARI = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
     function setOptions(select, arr){ select.innerHTML = ''; const ph = document.createElement('option'); ph.value=''; ph.textContent='-- pilih --'; ph.disabled=true; ph.selected=true; select.appendChild(ph); arr.forEach(v=>{ const o=document.createElement('option'); o.textContent=o.value=v; select.appendChild(o); }); }
     function updateLokasiMasa(){ if(hari.value === 'bekerja'){ setOptions(lokasi, LOKASI_BEKERJA); setOptions(masa, ['9:00–1:00','2:00–4:00']); } else { setOptions(lokasi, LOKASI_CUTI); setOptions(masa, ['9:00–1:00']); } }
@@ -104,18 +134,12 @@
     function dowOfInputDate(){ const v=tarikh.value; if(!v) return null; const d=new Date(v+'T00:00:00'); return d.getDay(); }
     function isWorkday(dow){ return [0,1,2,3,4].includes(dow); } // Ahad–Khamis
     function isWeekend(dow){ return [5,6].includes(dow); } // Jumaat–Sabtu
-    function normalizePhone(s=''){ return String(s).replace(/\D+/g,'').replace(/^0/,'60'); }
+
     // === Duplicate guard (client) ===
     const SUBMITTED_KEYS_KEY = 'mr_sia_submitted_keys'; // set of 'tel|tarikh'
+    function normalizePhone(s=''){ return String(s).replace(/\D+/g,'').replace(/^0/,'60'); }
     function getSubmittedKeys(){ try{return new Set(JSON.parse(localStorage.getItem(SUBMITTED_KEYS_KEY)||'[]'));}catch(e){return new Set();} }
     function addSubmittedKey(k){ const s=getSubmittedKeys(); s.add(k); localStorage.setItem(SUBMITTED_KEYS_KEY, JSON.stringify(Array.from(s))); }
-
-    // === Outbox retry (offline/failed) ===
-    const OUTBOX_KEY = 'mr_sia_outbox';
-    function loadOutbox(){ try{return JSON.parse(localStorage.getItem(OUTBOX_KEY)||'[]');}catch(e){return [];} }
-    function saveOutbox(arr){ localStorage.setItem(OUTBOX_KEY, JSON.stringify(arr)); }
-    async function flushOutbox(){ let q=loadOutbox(); if(!q.length) return; for(let i=0;i<q.length;i++){ try{ await postToSheet(q[i]); q[i]._sent=true; }catch(e){ console.warn('Retry gagal item', i, e); } } q=q.filter(x=>!x._sent); saveOutbox(q); if(q.length===0) showStatus('Semua item tertunggak berjaya dihantar.', true); }
-    window.addEventListener('online', flushOutbox);
 
     // === Dinamik: umur anak ===
     bil.addEventListener('change', ()=>{ anakFields.innerHTML=''; const n = parseInt(bil.value||'0',10); for(let i=1;i<=n;i++){ const wrap = document.createElement('div'); wrap.className='row'; wrap.innerHTML = `
@@ -129,14 +153,11 @@
     function validateHariTarikhHint(){ const dow = dowOfInputDate(); if(dow===null){ hariHint.textContent=''; return; } const htxt = HARI[dow]; if(hari.value==='bekerja' && !isWorkday(dow)){ hariHint.textContent = `Tarikh dipilih ialah ${htxt}. Pilihan hari sekarang: Hari bekerja (Ahad–Khamis). Sila pilih tarikh Ahad–Khamis.`; } else if(hari.value==='cuti' && !isWeekend(dow)){ hariHint.textContent = `Tarikh dipilih ialah ${htxt}. Pilihan hari sekarang: Hari cuti minggu (Jumaat–Sabtu). Sila pilih tarikh Jumaat atau Sabtu.`; } else { hariHint.textContent=''; } }
 
     // === Init ===
-    window.addEventListener('DOMContentLoaded', ()=>{ updateLokasiMasa(); flushOutbox(); });
+    window.addEventListener('DOMContentLoaded', ()=>{ updateLokasiMasa(); });
 
-    // === WhatsApp & CSV helper (last payload) ===
-    let lastPayload = null;
-    copyWaBtn.addEventListener('click', ()=>{
-      if(!lastPayload){ showStatus('Belum ada data untuk disalin. Hantar borang dahulu.', false); return; }
-      const r = lastPayload;
-      const txt = [
+    // === WhatsApp 1-klik (link) ===
+    function buildWAText(r){
+      return [
         '*Temujanji MR SIA – PKD Kuala Terengganu*',
         `Nama: ${r.nama}`,
         `Telefon: ${r.telefon}`,
@@ -147,18 +168,46 @@
         `Masa: ${r.masa}`,
         `Lokasi: ${r.lokasi}`
       ].join('\n');
-      navigator.clipboard.writeText(txt).then(()=> showStatus('Teks WhatsApp disalin.')).catch(()=> showStatus('Gagal salin WhatsApp.', false));
-    });
-return; }
-      const r = lastPayload;
-      const header = ['timestamp','nama','telefon','bertugas','bilAnak','umur1','umur2','umur3','pilihanHari','tarikh','masa','lokasi'];
-      const row = [r.timestamp,r.nama,r.telefon,r.bertugas,r.bilAnak,(r.umur[0]||''),(r.umur[1]||''),(r.umur[2]||''),r.pilihanHari,r.tarikh,r.masa,r.lokasi];
-      const csv = header.join(',')+'\n'+row.map(csvEsc).join(',');
-      const blob = new Blob([csv],{type:'text/csv;charset=utf-8'});
-      const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='temujanji_mr_sia.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    });
+    }
+    function updateWALink(r){ const url = 'https://wa.me/?text=' + encodeURIComponent(buildWAText(r)); waLink.href = url; }
+
+    // === ICS generator ===
+    function pad2(n){ return String(n).padStart(2,'0'); }
+    function ymd(dateStr){ const d=new Date(dateStr+'T00:00:00'); return d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate()); }
+    function timeRangeToHHMM(range){
+      if(range.includes('2:00–4:00')) return ['140000','160000'];
+      return ['090000','130000']; // default 9–1
+    }
+    function downloadICS(r){
+      const ymdStr = ymd(r.tarikh);
+      const t = timeRangeToHHMM(r.masa);
+      const start = t[0], end = t[1];
+      const uid = (Date.now()+'-'+Math.random()).replace(/\./g,'');
+      const dtstamp = new Date().toISOString().replace(/[-:]/g,'').replace(/\..+/,'Z').replace('T','');
+      const ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//PKD Kuala Terengganu//MR SIA//MY',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'BEGIN:VEVENT',
+        `UID:${uid}@pkdkt`,
+        `DTSTAMP:${dtstamp}`,
+        `DTSTART;TZID=Asia/Kuala_Lumpur:${ymdStr}T${start}`,
+        `DTEND;TZID=Asia/Kuala_Lumpur:${ymdStr}T${end}`,
+        `SUMMARY:Temujanji MR SIA – ${r.lokasi}`,
+        `LOCATION:${r.lokasi}`,
+        'DESCRIPTION:' + buildWAText(r).replace(/\n/g,'\\n'),
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+      const blob = new Blob([ics],{type:'text/calendar'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='temujanji_mr_sia.ics'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
 
     // === Submit ===
+    let lastPayload = null;
     form.addEventListener('submit', async (e)=>{
       e.preventDefault(); clearStatus();
 
@@ -166,9 +215,10 @@ return; }
       if(!form.checkValidity()){ showStatus('Sila lengkapkan semua medan yang diperlukan.', false); return; }
       const n = parseInt(bil.value||'0',10); if(!n || n<1 || n>3){ showStatus('Bilangan anak mesti 1–3.', false); return; }
       const umur = []; for(let i=1;i<=n;i++){ const v = parseInt(document.getElementById('umur'+i).value||'0',10); if(!v || v<6 || v>59){ showStatus('Umur anak mesti 6–59 bulan.', false); return; } umur.push(v); }
-      const dow = dowOfInputDate(); if(dow===null){ showStatus('Sila pilih tarikh.', false); return; }
-      if(hari.value==='bekerja' && !isWorkday(dow)){ showStatus('Tarikh tidak sepadan: Hari bekerja ialah Ahad–Khamis.', false); return; }
-      if(hari.value==='cuti' && !isWeekend(dow)){ showStatus('Tarikh tidak sepadan: Cuti minggu ialah Jumaat–Sabtu.', false); return; }
+      const dow = (function(){ const v=tarikh.value; if(!v) return null; const d=new Date(v+'T00:00:00'); return d.getDay(); })();
+      if(dow===null){ showStatus('Sila pilih tarikh.', false); return; }
+      if(hari.value==='bekerja' && ![0,1,2,3,4].includes(dow)){ showStatus('Tarikh tidak sepadan: Hari bekerja ialah Ahad–Khamis.', false); return; }
+      if(hari.value==='cuti' && ![5,6].includes(dow)){ showStatus('Tarikh tidak sepadan: Cuti minggu ialah Jumaat–Sabtu.', false); return; }
 
       const data = { timestamp: new Date().toISOString(),
         nama: document.getElementById('nama').value.trim(),
@@ -179,27 +229,40 @@ return; }
         tarikh: tarikh.value, masa: masa.value, lokasi: lokasi.value
       };
 
-      // Cegah rekod berganda (client): telefon+tarikh
+      // Duplicate guard (client): telefon+tarikh
       const dupKey = normalizePhone(data.telefon)+'|'+data.tarikh;
       const seen = getSubmittedKeys();
       if(seen.has(dupKey)){ showStatus('Rekod berganda dikesan (telefon+tarikh).', false); return; }
 
-      // Hantar
+      // Hantar ke Sheet
       submitBtn.disabled = true; submitBtn.textContent = 'Menghantar...';
-      try{ await postToSheet(data); addSubmittedKey(dupKey); lastPayload = data; showStatus('Berjaya dihantar ke Google Sheet.'); form.reset(); anakFields.innerHTML=''; updateLokasiMasa(); }
-      catch(err){ console.error(err); // simpan ke outbox
-        const q = loadOutbox(); q.push(data); saveOutbox(q);
-        showStatus('Gagal hantar. Data disimpan & akan cuba dihantar semula bila online.', false);
-      }finally{ submitBtn.disabled = false; submitBtn.textContent = 'Hantar'; }
+      try{ 
+        const res = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) });
+        if(!res.ok) throw new Error('Status '+res.status);
+        await res.text();
+        addSubmittedKey(dupKey);
+        lastPayload = data;
+        showStatus('Berjaya dihantar ke Google Sheet.');
+        // Render ticket + actions
+        t_nama.textContent = data.nama;
+        t_tel.textContent = data.telefon;
+        t_tarikh.textContent = data.tarikh;
+        t_masa.textContent = data.masa;
+        t_lokasi.textContent = data.lokasi;
+        t_bilumur.textContent = data.bilAnak + ' anak – ' + (data.umur||[]).join(', ') + ' bulan';
+        ticket.classList.add('show');
+        updateWALink(data);
+      }catch(err){
+        console.error(err);
+        showStatus('Gagal hantar. Semak Web App access (Anyone with link) & cuba lagi.', false);
+      }finally{
+        submitBtn.disabled = false; submitBtn.textContent = 'Hantar';
+      }
     });
 
-    async function postToSheet(payload){
-      const res = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
-      if(!res.ok) throw new Error('Status '+res.status);
-      const text = await res.text();
-      if(/duplicate/i.test(text)) throw new Error('Duplicate');
-      return text;
-    }
+    // Add-to-Calendar action
+    addCalBtn.addEventListener('click', ()=>{ if(!lastPayload){ showStatus('Hantar borang dahulu sebelum tambah ke Calendar.', false); return; } downloadICS(lastPayload); });
+
   </script>
 </body>
 </html>
