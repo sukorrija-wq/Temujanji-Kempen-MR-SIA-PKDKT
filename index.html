@@ -6,153 +6,67 @@
   <title>Temujanji Kempen MR SIA – PKD Kuala Terengganu</title>
   <meta name="theme-color" content="#0f172a" />
   <style>
-    :root{
-      --bg:#0f172a;--card:#0b1220;--ring:#334155;--muted:#94a3b8;--text:#e5e7eb;--primary:#38bdf8;--accent:#22c55e;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,Arial;background:var(--bg);color:var(--text)}
+    body{margin:0;font-family:system-ui,Arial;background:#0f172a;color:#e5e7eb;}
     .container{max-width:900px;margin:0 auto;padding:24px}
-    header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
-    h1{font-size:20px;margin:0}
-    .badge{font-size:12px;color:#06213a;background:var(--primary);padding:6px 10px;border-radius:999px;font-weight:700}
-    .card{background:var(--card);border:1px solid var(--ring);border-radius:12px;padding:18px;margin:12px 0}
-    label{display:block;margin-bottom:6px;font-size:13px;color:var(--muted)}
-    input,select,button,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--ring);background:#0a1020;color:var(--text);font-size:14px}
-    input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(56,189,248,.15)}
-    button{cursor:pointer;font-weight:700}
-    .btn-primary{background:var(--primary);color:#06213a;border:none}
-    .btn-ghost{background:transparent;border:1px solid var(--ring)}
-    .actions{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
-    .help{font-size:12px;color:var(--muted)}
-    .muted{color:var(--muted)}
-    .row{display:grid;gap:6px}
-    .grid{display:grid;gap:14px}
-    @media(min-width:720px){.grid-2{grid-template-columns:1fr 1fr}}
-    .info{padding:10px 12px;border-radius:10px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.35)}
-    .warn{padding:10px 12px;border-radius:10px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.35)}
-    .error{padding:10px 12px;border-radius:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35)}
-    .hidden{display:none!important}
-    .pill{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--ring);font-size:12px}
+    h1{font-size:20px;margin-bottom:12px}
+    .card{background:#0b1220;border:1px solid #334155;border-radius:12px;padding:18px;margin:12px 0;color:#e5e7eb}
+    label{display:block;margin-bottom:4px;font-size:14px;color:#94a3b8}
+    input,select,button,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #334155;background:#0a1020;color:#e5e7eb;font-size:14px}
+    button{cursor:pointer;font-weight:600}
+    .btn-primary{background:#38bdf8;color:#06213a;border:none}
+    .actions{margin-top:14px;display:flex;gap:10px}
+    .help{font-size:12px;color:#94a3b8}
+    footer{text-align:center;margin:18px 0;color:#94a3b8}
     /* Radio-as-chips */
     .chips{display:flex;gap:8px;flex-wrap:wrap}
-    .chip{border:1px solid var(--ring);padding:8px 12px;border-radius:999px;cursor:pointer;user-select:none}
+    .chip{border:1px solid #334155;padding:8px 12px;border-radius:999px;cursor:pointer;user-select:none}
     input[type=radio].sr-only{position:absolute;opacity:0;pointer-events:none}
-    input[type=radio]:checked+label.chip{background:var(--primary);color:#06213a;border-color:var(--primary)}
-    .table{width:100%;border-collapse:collapse}
-    .table th,.table td{border-bottom:1px solid var(--ring);text-align:left;padding:8px}
-    footer{text-align:center;margin:18px 0;color:var(--muted)}
+    input[type=radio]:checked+label.chip{background:#38bdf8;color:#06213a;border-color:#38bdf8;font-weight:700}
   </style>
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>Temujanji Kempen <strong>MR SIA</strong> – <span class="muted">PKD Kuala Terengganu</span></h1>
-      <span class="badge">6–59 bulan · DOB 1/8/2020 – 31/1/2025</span>
-    </header>
-
-    <div class="card info">
-      <div class="grid grid-2">
-        <div>
-          <div><strong>Syarat umur:</strong> Kanak-kanak 6–59 bulan (tarikh lahir antara <strong>1/8/2020</strong> hingga <strong>31/1/2025</strong>).</div>
-          <div class="muted" style="margin-top:6px">Isikan DOB setiap anak untuk pengesahan automatik.</div>
-        </div>
-        <div>
-          <div><strong>Slot & lokasi:</strong></div>
-          <ul class="muted" style="margin:6px 0 0 18px">
-            <li><strong>Ahad–Khamis:</strong> 9:00–1:00 atau 2:00–4:00 di KKH, KKM, KKC, KK UTC, KK Paya Datu.</li>
-            <li><strong>Jumaat & Sabtu:</strong> 9:00–1:00 di <strong>KK Hiliran</strong> sahaja.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <h1>Temujanji Kempen MR SIA – PKD Kuala Terengganu</h1>
+    <p><strong>Syarat umur:</strong> Kanak-kanak 6–59 bulan (tarikh lahir antara 1/8/2020 hingga 31/1/2025).</p>
 
     <form id="apptForm" class="card">
-      <div class="grid grid-2">
-        <div class="row">
-          <label for="nama">Nama penuh</label>
-          <input id="nama" name="nama" required placeholder="Contoh: Ahmad bin Ali" />
-        </div>
-        <div class="row">
-          <label for="telefon">No. telefon</label>
-          <input id="telefon" name="telefon" required placeholder="Contoh: 0123456789" />
-        </div>
-      </div>
+      <label for="nama">Nama penuh</label>
+      <input id="nama" name="nama" required />
 
-      <div class="grid grid-2">
-        <div class="row">
-          <label for="bertugas">Tempat bertugas</label>
-          <input id="bertugas" name="bertugas" required placeholder="Contoh: SK Paya Bunga" />
-        </div>
-        <div class="row">
-          <label for="bilAnak">Bilangan anak (6–59 bulan)</label>
-          <select id="bilAnak" name="bilAnak" required>
-            <option value="" disabled selected>Pilih bilangan</option>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-          </select>
-        </div>
-      </div>
+      <label for="telefon">No. telefon</label>
+      <input id="telefon" name="telefon" required />
 
-      <div id="anakFields" class="grid" style="margin-top:8px"></div>
+      <label for="bertugas">Tempat bertugas</label>
+      <input id="bertugas" name="bertugas" required />
 
-      <div class="grid grid-2" style="margin-top:8px">
-        <div class="row">
-          <label for="tarikh">Tarikh pilihan</label>
-          <input type="date" id="tarikh" name="tarikh" required />
-          <div class="help">Hari dipilih: <span id="hariLabel">-</span></div>
-        </div>
-        <div class="row">
-          <label>Tempat suntikan</label>
-          <div id="lokasiGroup" class="chips"></div>
-          <div class="help" id="lokasiHelp"></div>
-        </div>
-      </div>
+      <label for="bilAnak">Bilangan anak (6–59 bulan)</label>
+      <select id="bilAnak" name="bilAnak" required>
+        <option value="" disabled selected>Pilih bilangan</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+      </select>
 
-      <div class="grid grid-2" style="margin-top:8px">
-        <div class="row">
-          <label>Slot masa</label>
-          <div id="masaGroup" class="chips"></div>
-        </div>
-        <div class="row">
-          <label for="catatan">Catatan (opsyenal)</label>
-          <textarea id="catatan" name="catatan" rows="1" placeholder="Contoh: Mohon slot paling awal"></textarea>
-        </div>
-      </div>
+      <div id="anakFields"></div>
 
-      <div class="row" style="margin-top:8px">
-        <label class="muted"><input type="checkbox" id="akuan" required /> Saya mengesahkan semua kanak-kanak berumur 6–59 bulan (DOB 1/8/2020–31/1/2025).</label>
-      </div>
+      <label>Pilihan hari</label>
+      <div id="hariGroup" class="chips"></div>
 
-      <div id="msg" class="row hidden"></div>
+      <label for="tarikh">Tarikh pilihan</label>
+      <input type="date" id="tarikh" name="tarikh" required />
 
-      <div class="actions" style="margin-top:12px">
-        <button class="btn-primary" type="submit">Hantar Temujanji</button>
-        <button class="btn-ghost" type="button" id="resetBtn">Reset</button>
+      <label>Tempat suntikan</label>
+      <div id="lokasiGroup" class="chips"></div>
+      <div class="help" id="lokasiHelp"></div>
+
+      <label>Slot masa</label>
+      <div id="masaGroup" class="chips"></div>
+
+      <div class="actions">
+        <button type="submit" class="btn-primary">Hantar</button>
+        <button type="reset">Reset</button>
       </div>
     </form>
-
-    <div id="previewCard" class="card hidden">
-      <div>
-        <h3 style="margin:0 0 6px 0">Ringkasan Temujanji</h3>
-        <div id="previewText" class="muted"></div>
-      </div>
-      <div class="actions" style="margin-top:12px">
-        <button class="btn-primary" id="downloadCsv">Muat turun CSV</button>
-        <button class="btn-ghost" id="copyWa">Salin untuk WhatsApp</button>
-      </div>
-    </div>
-
-    <div id="savedWrap" class="card hidden">
-      <h3 style="margin-top:0">Rekod Disimpan (peranti ini)</h3>
-      <div class="muted" style="margin-bottom:8px">Disimpan dalam pelayar (localStorage) untuk rujukan segera.</div>
-      <div style="overflow:auto">
-        <table class="table" id="savedTable"></table>
-      </div>
-      <div class="actions" style="margin-top:10px">
-        <button class="btn-ghost" id="clearSaved">Kosongkan Rekod</button>
-      </div>
-    </div>
 
     <footer>
       Dibangunkan oleh <strong>ChatGPT (Codex &amp; GitHub)</strong>, Powered By <strong>Staf PKD Kuala Terengganu</strong>
@@ -160,267 +74,96 @@
   </div>
 
   <script>
-    // === Konfigurasi ===
-    const DOB_MIN = new Date('2020-08-01');
-    const DOB_MAX = new Date('2025-01-31T23:59:59');
-    const HARI = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
-    const LOKASI_MINGGU = ['KKH','KKM','KKC','KK UTC','KK Paya Datu'];
-    const LOKASI_HUJUNG = ['KK Hiliran'];
-
-    const form = document.getElementById('apptForm');
     const bilAnak = document.getElementById('bilAnak');
     const anakFields = document.getElementById('anakFields');
     const tarikh = document.getElementById('tarikh');
-    const hariLabel = document.getElementById('hariLabel');
     const lokasiGroup = document.getElementById('lokasiGroup');
-    const lokasiHelp = document.getElementById('lokasiHelp');
+    const hariGroup = document.getElementById('hariGroup');
     const masaGroup = document.getElementById('masaGroup');
-    const msg = document.getElementById('msg');
-    const resetBtn = document.getElementById('resetBtn');
+    const lokasiHelp = document.getElementById('lokasiHelp');
 
-    const previewCard = document.getElementById('previewCard');
-    const previewText = document.getElementById('previewText');
-    const downloadCsvBtn = document.getElementById('downloadCsv');
-    const copyWaBtn = document.getElementById('copyWa');
+    // Konfigurasi pilihan mengikut hari
+    const LOKASI_HARI_BEKERJA = ['KK Hiliran','KK Manir','KK Chendering','KK UTC','KK Paya Datu'];
+    const LOKASI_HUjung_MINGGU = ['KK Hiliran'];
 
-    const savedWrap = document.getElementById('savedWrap');
-    const savedTable = document.getElementById('savedTable');
-    const clearSavedBtn = document.getElementById('clearSaved');
-
-    // Min date = hari ini
-    const todayLocal = new Date();
-    tarikh.min = fmtDateInput(todayLocal);
-
-    function fmtDateInput(d){
-      const z = n => String(n).padStart(2,'0');
-      return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`;
-    }
-
-    // Dinamik medan DOB anak
     bilAnak.addEventListener('change', ()=>{
-      anakFields.innerHTML='';
-      const n = parseInt(bilAnak.value||'0',10);
-      for(let i=1;i<=n;i++){
+      anakFields.innerHTML = '';
+      const count = parseInt(bilAnak.value||'0');
+      for(let i=1;i<=count;i++){
         const div = document.createElement('div');
-        div.className='row';
         div.innerHTML = `
           <label for="dob${i}">Tarikh lahir Anak ${i}</label>
           <input type="date" id="dob${i}" name="dob${i}" required />
-          <div class="help" id="dob${i}Help"></div>
         `;
         anakFields.appendChild(div);
       }
     });
 
-    // Kemas kini slot/lokasi ikut tarikh
     tarikh.addEventListener('change', ()=>{
-      setLokasiAndMasaByDate();
-      const n = parseInt(bilAnak.value||'0',10);
-      for(let i=1;i<=n;i++) validateDob('dob'+i);
+      // Tarikh tidak lagi mengawal pilihan lokasi/masa; biar pengguna pilih jenis hari.
+      // Tetapi kita boleh kekalkan fungsi DOB autovalid di tempat lain jika perlu.
     });
 
-    anakFields.addEventListener('change', e=>{
-      if(e.target && e.target.matches('input[type="date"]')){ validateDob(e.target.id); }
+    // Pilihan hari -> kawal lokasi & masa
+    hariGroup.addEventListener('change', (e)=>{
+      if(e.target && e.target.name === 'hari'){ setLokasiAndMasaByDay(); }
+    });
     });
 
-    function setLokasiAndMasaByDate(){
+    function setLokasiAndMasaByDay(){
       lokasiGroup.innerHTML = '';
       masaGroup.innerHTML = '';
       lokasiHelp.textContent = '';
-      const d = new Date(tarikh.value);
-      if(isNaN(d)){ hariLabel.textContent='-'; return; }
-      const dow = d.getDay();
-      hariLabel.textContent = HARI[dow];
-      const isWeekEnd = (dow===5 || dow===6); // 5=Jumaat, 6=Sabtu
-
-      const locs = isWeekEnd ? LOKASI_HUJUNG : LOKASI_MINGGU;
+      const hariPick = document.querySelector('input[name="hari"]:checked');
+      const isBekerja = !hariPick || /bekerja/i.test(hariPick.value);
+      const locs = isBekerja ? LOKASI_HARI_BEKERJA : LOKASI_HUjung_MINGGU;
       renderRadios('lokasi', lokasiGroup, locs);
-
-      if(isWeekEnd){
-        lokasiHelp.innerHTML = '<span class="pill">Hujung minggu</span> Lokasi terhad kepada <strong>KK Hiliran</strong>.';
-        const label = (dow===5)?'9:00–1:00 (Jumaat)':'9:00–1:00 (Sabtu)';
-        renderRadios('masa', masaGroup, [label]);
-      }else{
-        lokasiHelp.innerHTML = '<span class="pill">Ahad–Khamis</span> Lokasi: KKH, KKM, KKC, KK UTC, KK Paya Datu.';
+      if(isBekerja){
+        lokasiHelp.textContent = 'Hari bekerja (Ahad–Khamis): KK Hiliran, KK Manir, KK Chendering, KK UTC, KK Paya Datu';
+        renderRadios('masa', masaGroup, ['9:00–1:00','2:00–4:00']);
+      } else {
+        lokasiHelp.textContent = 'Hari cuti minggu (Jumaat–Sabtu): KK Hiliran sahaja';
+        renderRadios('masa', masaGroup, ['9:00–1:00']);
+      }
+    } else {
+        lokasiHelp.innerHTML = 'Ahad–Khamis: KKH, KKM, KKC, KK UTC, KK Paya Datu';
         renderRadios('masa', masaGroup, ['9:00–1:00','2:00–4:00']);
       }
     }
 
     function renderRadios(name, container, options){
-      container.innerHTML='';
+      container.innerHTML = '';
       options.forEach((opt,i)=>{
         const id = `${name}_${opt.replace(/[^a-zA-Z0-9]+/g,'_')}`;
         const input = document.createElement('input');
-        input.type='radio'; input.className='sr-only'; input.name=name; input.id=id; input.value=opt;
-        if(i===0) input.required = true; // pastikan ada sekurang-kurangnya satu pilihan dibuat
-        const label = document.createElement('label'); label.className='chip'; label.setAttribute('for',id); label.textContent=opt;
+        input.type = 'radio'; input.className = 'sr-only'; input.name = name; input.id = id; input.value = opt;
+        if(i===0) input.required = true;
+        const label = document.createElement('label');
+        label.className = 'chip'; label.setAttribute('for', id); label.textContent = opt;
         const wrap = document.createElement('div'); wrap.appendChild(input); wrap.appendChild(label);
         container.appendChild(wrap);
       });
     }
 
-    function validateDob(id){
-      const el = document.getElementById(id);
-      const hlp = document.getElementById(id+'Help');
-      const v = new Date(el.value);
-      if(isNaN(v)){ hlp.textContent=''; return true; }
-      if(v < DOB_MIN || v > DOB_MAX){
-        hlp.innerHTML = `<span class="error">Tarikh lahir mesti antara 1/8/2020 hingga 31/1/2025.</span>`;
-        return false;
-      }
-      const appt = new Date(tarikh.value || new Date());
-      const months = diffMonths(v, appt);
-      hlp.innerHTML = `<span class="muted">Anggaran umur pada tarikh temujanji: ${months} bulan</span>`;
-      if(months < 6 || months > 59){ hlp.innerHTML += ` <span class="warn">(Luar julat 6–59 bulan)</span>`; }
-      return true;
+    // Render default pilihan hari ketika mula
+    (function initHari(){
+      renderRadios('hari', hariGroup, ['Hari bekerja (Ahad–Khamis)','Hari cuti minggu (Jumaat–Sabtu)']);
+      setLokasiAndMasaByDay();
+    })();_${opt.replace(/[^a-zA-Z0-9]+/g,'_')}`;
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.className = 'sr-only';
+        input.name = name; input.id = id; input.value = opt;
+        if(i===0) input.required = true;
+        const label = document.createElement('label');
+        label.className = 'chip';
+        label.setAttribute('for', id);
+        label.textContent = opt;
+        const wrap = document.createElement('div');
+        wrap.appendChild(input); wrap.appendChild(label);
+        container.appendChild(wrap);
+      });
     }
-    function diffMonths(a,b){
-      let m=(b.getFullYear()-a.getFullYear())*12 + (b.getMonth()-a.getMonth());
-      if(b.getDate()<a.getDate()) m--;
-      return Math.max(0,m);
-    }
-
-    function showMsg(type, text){
-      msg.classList.remove('hidden');
-      msg.className='row '+(type==='error'?'error':(type==='warn'?'warn':'info'));
-      msg.textContent=text;
-    }
-    function clearMsg(){ msg.className='row hidden'; msg.textContent=''; }
-
-    // Reset
-    resetBtn.addEventListener('click',()=>{
-      form.reset(); anakFields.innerHTML=''; hariLabel.textContent='-';
-      lokasiGroup.innerHTML=''; masaGroup.innerHTML='';
-      clearMsg(); previewCard.classList.add('hidden');
-    });
-
-    // Submit
-    form.addEventListener('submit',(e)=>{
-      e.preventDefault(); clearMsg();
-      const n = parseInt(bilAnak.value||'0',10);
-      for(let i=1;i<=n;i++){
-        if(!validateDob('dob'+i)){ showMsg('error','Semak semula tarikh lahir anak.'); return; }
-      }
-      const d = new Date(tarikh.value);
-      if(isNaN(d)){ showMsg('error','Sila pilih tarikh sah.'); return; }
-      const dow = d.getDay();
-      const isWeekEnd = (dow===5 || dow===6);
-
-      const locPick = document.querySelector('input[name="lokasi"]:checked');
-      const masaPick = document.querySelector('input[name="masa"]:checked');
-      const locVal = locPick ? locPick.value : '';
-      const masaVal = masaPick ? masaPick.value : '';
-      if(!locVal || !masaVal){ showMsg('error','Sila pilih lokasi dan masa.'); return; }
-      if(isWeekEnd && locVal !== 'KK Hiliran'){ showMsg('error','Hujung minggu hanya di KK Hiliran.'); return; }
-      if(!isWeekEnd && locVal === 'KK Hiliran'){ showMsg('error','Ahad–Khamis tidak menggunakan KK Hiliran.'); return; }
-
-      const tel = document.getElementById('telefon').value.trim();
-      const telOk = /^\+?6?0\d{8,10}$/.test(tel) || /^0\d{8,10}$/.test(tel);
-      if(!telOk){ showMsg('warn','No. telefon mungkin tidak sah. Teruskan jika pasti.'); }
-
-      const data={
-        timestamp:new Date().toISOString(),
-        nama:document.getElementById('nama').value.trim(),
-        telefon:tel,
-        bertugas:document.getElementById('bertugas').value.trim(),
-        bilAnak:n,
-        dob:Array.from({length:n},(_,i)=> document.getElementById('dob'+(i+1)).value || ''),
-        tarikh:tarikh.value,
-        hari:HARI[dow],
-        masa:masaVal,
-        lokasi:locVal,
-        catatan:document.getElementById('catatan').value.trim(),
-      };
-
-      // Ringkasan
-      previewText.innerHTML = `
-        <strong>${escapeHtml(data.nama)}</strong> (${data.telefon})<br/>
-        Tempat bertugas: ${escapeHtml(data.bertugas)}<br/>
-        Bilangan anak: ${data.bilAnak}${data.dob.length?` · DOB: ${data.dob.join(', ')}`:''}<br/>
-        Tarikh: ${data.tarikh} (${data.hari}) · Masa: ${data.masa}<br/>
-        Lokasi: <strong>${data.lokasi}</strong>${data.catatan?`<br/>Catatan: ${escapeHtml(data.catatan)}`:''}
-      `;
-      previewCard.classList.remove('hidden');
-
-      // Simpan + Aksi
-      saveRecord(data); renderSaved();
-      downloadCsvBtn.onclick = ()=> downloadCsv([data]);
-      copyWaBtn.onclick = ()=> copyWhatsApp(data);
-      showMsg('info','Temujanji dibentuk. Anda boleh muat turun CSV atau salin mesej WhatsApp.');
-    });
-
-    // Rekod tempatan
-    function saveRecord(obj){
-      const key='mr_sia_records';
-      const arr=JSON.parse(localStorage.getItem(key)||'[]');
-      arr.unshift(obj);
-      localStorage.setItem(key, JSON.stringify(arr));
-    }
-    function renderSaved(){
-      const key='mr_sia_records';
-      const arr=JSON.parse(localStorage.getItem(key)||'[]');
-      if(!arr.length){ savedWrap.classList.add('hidden'); return; }
-      savedWrap.classList.remove('hidden');
-      const headers=['Masa Simpan','Nama','Telefon','Bertugas','Bil Anak','DOB','Tarikh','Hari','Masa','Lokasi','Catatan'];
-      let html='<thead><tr>'+headers.map(h=>`<th>${h}</th>`).join('')+'</tr></thead><tbody>';
-      html += arr.map(r=>`<tr>
-        <td>${new Date(r.timestamp).toLocaleString()}</td>
-        <td>${escapeHtml(r.nama)}</td>
-        <td>${r.telefon}</td>
-        <td>${escapeHtml(r.bertugas)}</td>
-        <td>${r.bilAnak}</td>
-        <td>${(r.dob||[]).join('; ')}</td>
-        <td>${r.tarikh}</td>
-        <td>${r.hari}</td>
-        <td>${r.masa}</td>
-        <td>${r.lokasi}</td>
-        <td>${escapeHtml(r.catatan||'')}</td>
-      </tr>`).join('') + '</tbody>';
-      savedTable.innerHTML = html;
-    }
-    clearSavedBtn.addEventListener('click', ()=>{
-      if(confirm('Padam semua rekod pada peranti ini?')){
-        localStorage.removeItem('mr_sia_records'); renderSaved();
-      }
-    });
-
-    // CSV & WhatsApp
-    function downloadCsv(rows){
-      const header=['timestamp','nama','telefon','bertugas','bilAnak','dob1','dob2','dob3','tarikh','hari','masa','lokasi','catatan'];
-      const lines=[header.join(',')];
-      for(const r of rows){
-        const line=[r.timestamp,csv(r.nama),csv(r.telefon),csv(r.bertugas),r.bilAnak,csv(r.dob[0]||''),csv(r.dob[1]||''),csv(r.dob[2]||''),r.tarikh,r.hari,csv(r.masa),csv(r.lokasi),csv(r.catatan||'')].join(',');
-        lines.push(line);
-      }
-      const blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a'); a.href=url; a.download='temujanji_mr_sia.csv';
-      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    }
-    function copyWhatsApp(r){
-      const text=[
-        '*Temujanji MR SIA – PKD Kuala Terengganu*',
-        `Nama: ${r.nama}`,
-        `Telefon: ${r.telefon}`,
-        `Tempat bertugas: ${r.bertugas}`,
-        `Bil anak: ${r.bilAnak}` + (r.dob.length?` | DOB: ${r.dob.join(', ')}`:''),
-        `Tarikh: ${r.tarikh} (${r.hari})`,
-        `Masa: ${r.masa}`,
-        `Lokasi: ${r.lokasi}`,
-        r.catatan?`Catatan: ${r.catatan}`:''
-      ].filter(Boolean).join('\n');
-      navigator.clipboard.writeText(text)
-        .then(()=>{ showMsg('info','Teks ringkasan disalin. Buka WhatsApp dan tampal.'); })
-        .catch(()=>{ showMsg('warn','Tidak dapat menyalin automatik. Sila pilih & salin sendiri.'); });
-    }
-
-    // Util
-    function csv(s){ const needsQuote=/[",\n]/.test(String(s)); let v=String(s).replace(/"/g,'""'); return needsQuote ? '"'+v+'"' : v; }
-    function escapeHtml(str=''){ return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;'); }
-
-    // Init
-    renderSaved();
-    setLokasiAndMasaByDate();
   </script>
 </body>
 </html>
