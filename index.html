@@ -122,16 +122,44 @@
       for(let i=1;i<=count;i++){
         const div = document.createElement('div');
         div.innerHTML = `
-          <label for=\"dob${i}\">Tarikh lahir Anak ${i}</label>
-          <input type=\"date\" id=\"dob${i}\" name=\"dob${i}\" required />
+          <label for="umur${i}">Umur Anak ${i} (bulan)</label>
+          <input type="number" id="umur${i}" name="umur${i}" min="6" max="59" required />
+          <div class="help" id="umur${i}Help"></div>
         `;
         anakFields.appendChild(div);
       }
+    });iv>
+        `;
+        anakFields.appendChild(div);
+      }
+   hariGroup.addEventListener('change', (e)=>{
+      if(e.target && e.target.name === 'hari'){ setLokasiAndMasaByDay(); }
     });
 
-    // ====== Pilihan hari mengawal lokasi & masa ======
-    hariGroup.addEventListener('change', (e)=>{
-      if(e.target && e.target.name === 'hari'){ setLokasiAndMasaByDay(); }
+    // Validasi umur anak (6–59 bulan)
+    anakFields.addEventListener('input', (e)=>{
+      if(e.target && /^umur\\d+$/.test(e.target.id)){
+        const i = e.target.id.replace('umur','');
+        const help = document.getElementById(`umur${i}Help`);
+        const val = parseInt(e.target.value||'0',10);
+        if(!val){ help.textContent=''; return; }
+        if(val < 6 || val > 59){ help.textContent = 'Umur mesti antara 6–59 bulan'; }
+        else { help.textContent = 'OK'; }
+      }
+    }); if(e.target && e.target.name === 'hari'){ setLokasiAndMasaByDay(); }
+    });
+
+    // Validasi umur anak (6–59 bulan)
+    anakFields.addEventListener('input', (e)=>{
+      if(e.target && /^umur\d+$/.test(e.target.id)){
+        const i = e.target.id.replace('umur','');
+        const help = document.getElementById(`umur${i}Help`);
+        const val = parseInt(e.target.value||'0',10);
+        if(!val){ help.textContent=''; return; }
+        if(val < 6 || val > 59){ help.textContent = 'Umur mesti antara 6–59 bulan'; }
+        else { help.textContent = 'OK'; }
+      }
+    }); }
     });
     function setLokasiAndMasaByDay(){
       lokasiGroup.innerHTML = '';
@@ -143,9 +171,11 @@
       renderRadios('lokasi', lokasiGroup, locs);
       if(isBekerja){
         lokasiHelp.textContent = 'Hari bekerja (Ahad–Khamis): KK Hiliran, KK Manir, KK Chendering, KK UTC, KK Paya Datu';
-        renderRadios('masa', masaGroup, ['9:00–1:00','2:00–4:00']);
-      } else {
-        lokasiHelp.textContent = 'Hari cuti minggu (Jumaat–Sabtu): KK Hiliran sahaja';
+        renderRadios('masa', masaGroup, ['9const umur = Array.from({length:n},(_,i)=> parseInt(document.getElementById('umur'+(i+1)).value||'0',10));
+      if(umur.some(m => !m || m < 6 || m > 59)){
+        showMsg('error','Masukkan umur anak antara 6–59 bulan.');
+        return;
+      }Jumaat–Sabtu): KK Hiliran sahaja';
         renderRadios('masa', masaGroup, ['9:00–1:00']);
       }
     }
@@ -158,8 +188,10 @@
       const telefon = document.getElementById('telefon').value.trim();
       const bertugas = document.getElementById('bertugas').value.trim();
       const n = parseInt(bilAnak.value||'0',10);
-      const dob = Array.from({length:n},(_,i)=> document.getElementById('dob'+(i+1)).value || '');
-      const hariPick = document.querySelector('input[name="hari"]:checked');
+      const umur = Array.from({length:n},(_,i)=> parseInt(document.getElementById('umur'+(i+1)).value||'0',10));
+      if(umur.some(m => !m || m < 6 || m > 59)){
+        showMsg('error','Masukkan umur anak antara
+      const hariPick = document.querySelector('inpbilAnak: n, umur, dob: umur.map(m=> `${m} bulan`),checked');
       const isBekerja = !hariPick || /bekerja/i.test(hariPick.value);
       const tarikhVal = tarikh.value;
       const locPick = document.querySelector('input[name="lokasi"]:checked');
@@ -176,7 +208,7 @@
         timestamp: new Date().toISOString(),
         nama, telefon, bertugas,
         bilAnak: n, dob,
-        pilihanHari: isBekerja ? 'Hari bekerja (Ahad–Khamis)' : 'Hari cuti minggu (Jumaat–Sabtu)',
+        pilihanHari: i bekerja (Ahad–Khamis)' : 'Hari cuti minggu (Jumaat–Sabtu)',
         tarikh: tarikhVal,
         masa: masaVal,
         lokasi: lokasiVal
