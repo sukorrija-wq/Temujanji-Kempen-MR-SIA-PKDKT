@@ -67,8 +67,7 @@
       <div class="btn-row">
         <button class="btn" id="submitBtn" type="submit">Hantar</button>
         <button type="button" id="copyWa">Salin WhatsApp</button>
-        <button type="button" id="dlCsv">Muat turun CSV</button>
-      </div>
+</div>
 
       <div id="status" class="status"></div>
     </form>
@@ -96,9 +95,7 @@
     const statusBox = document.getElementById('status');
     const submitBtn = document.getElementById('submitBtn');
     const copyWaBtn = document.getElementById('copyWa');
-    const dlCsvBtn = document.getElementById('dlCsv');
-
-    // === Util ===
+// === Util ===
     const HARI = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
     function setOptions(select, arr){ select.innerHTML = ''; const ph = document.createElement('option'); ph.value=''; ph.textContent='-- pilih --'; ph.disabled=true; ph.selected=true; select.appendChild(ph); arr.forEach(v=>{ const o=document.createElement('option'); o.textContent=o.value=v; select.appendChild(o); }); }
     function updateLokasiMasa(){ if(hari.value === 'bekerja'){ setOptions(lokasi, LOKASI_BEKERJA); setOptions(masa, ['9:00–1:00','2:00–4:00']); } else { setOptions(lokasi, LOKASI_CUTI); setOptions(masa, ['9:00–1:00']); } }
@@ -108,8 +105,6 @@
     function isWorkday(dow){ return [0,1,2,3,4].includes(dow); } // Ahad–Khamis
     function isWeekend(dow){ return [5,6].includes(dow); } // Jumaat–Sabtu
     function normalizePhone(s=''){ return String(s).replace(/\D+/g,'').replace(/^0/,'60'); }
-    function csvEsc(s){ const t=String(s).replaceAll('"','""'); return /[",\n]/.test(t) ? '"'+t+'"' : t; }
-
     // === Duplicate guard (client) ===
     const SUBMITTED_KEYS_KEY = 'mr_sia_submitted_keys'; // set of 'tel|tarikh'
     function getSubmittedKeys(){ try{return new Set(JSON.parse(localStorage.getItem(SUBMITTED_KEYS_KEY)||'[]'));}catch(e){return new Set();} }
@@ -154,9 +149,7 @@
       ].join('\n');
       navigator.clipboard.writeText(txt).then(()=> showStatus('Teks WhatsApp disalin.')).catch(()=> showStatus('Gagal salin WhatsApp.', false));
     });
-
-    dlCsvBtn.addEventListener('click', ()=>{
-      if(!lastPayload){ showStatus('Belum ada data untuk dimuat turun. Hantar borang dahulu.', false); return; }
+return; }
       const r = lastPayload;
       const header = ['timestamp','nama','telefon','bertugas','bilAnak','umur1','umur2','umur3','pilihanHari','tarikh','masa','lokasi'];
       const row = [r.timestamp,r.nama,r.telefon,r.bertugas,r.bilAnak,(r.umur[0]||''),(r.umur[1]||''),(r.umur[2]||''),r.pilihanHari,r.tarikh,r.masa,r.lokasi];
