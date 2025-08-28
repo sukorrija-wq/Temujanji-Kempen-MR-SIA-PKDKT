@@ -5,20 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Temujanji MR SIA – PKD Kuala Terengganu</title>
   <style>
-    :root { --bg:#0f172a; --card:#0b1220; --ring:#334155; --text:#e5e7eb; --muted:#94a3b8; --primary:#38bdf8; }
+    :root { --bg:#0f172a; --card:#0b1220; --ring:#334155; --text:#e5e7eb; --muted:#94a3b8; --primary:#38bdf8; --ok:#22c55e; --err:#ef4444; }
     *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial}
-    .wrap{max-width:680px;margin:0 auto;padding:20px}
+    .wrap{max-width:760px;margin:0 auto;padding:20px}
     h1{font-size:20px;margin:0 0 10px}
     .card{background:var(--card);border:1px solid var(--ring);border-radius:12px;padding:14px}
     label{display:block;margin:10px 0 4px;color:var(--muted)}
-    input,select,button{width:100%;padding:10px;border-radius:8px;border:1px solid var(--ring);background:#0a1020;color:var(--text)}
+    input,select,button,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--ring);background:#0a1020;color:var(--text)}
     button{cursor:pointer;font-weight:700}
     .btn{background:var(--primary);color:#06213a;border:none;margin-top:14px}
+    .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
     .row{margin-top:8px}
     .help{color:var(--muted);font-size:12px}
     .status{margin-top:10px;padding:10px;border-radius:8px;border:1px solid var(--ring);display:none}
     .status.show{display:block}
+    .ok{border-color:var(--ok)}
+    .err{border-color:var(--err)}
     footer{margin:16px 0;text-align:center;color:var(--muted)}
+    .pill{display:inline-block;border:1px solid var(--ring);border-radius:999px;padding:3px 8px;font-size:12px}
   </style>
 </head>
 <body>
@@ -49,6 +53,7 @@
         <option value="bekerja" selected>Hari bekerja (Ahad–Khamis)</option>
         <option value="cuti">Hari cuti minggu (Jumaat–Sabtu)</option>
       </select>
+      <div id="hariHint" class="help"></div>
 
       <label for="tarikh">Tarikh pilihan</label>
       <input type="date" id="tarikh" required />
@@ -59,7 +64,11 @@
       <label for="masa">Slot masa</label>
       <select id="masa" required></select>
 
-      <button class="btn" id="submitBtn" type="submit">Hantar</button>
+      <div class="btn-row">
+        <button class="btn" id="submitBtn" type="submit">Hantar</button>
+        <button type="button" id="copyWa">Salin WhatsApp</button>
+        <button type="button" id="dlCsv">Muat turun CSV</button>
+      </div>
 
       <div id="status" class="status"></div>
     </form>
@@ -68,7 +77,7 @@
   </div>
 
   <script>
-    // === Web App URL (Apps Script) — anda sudah sediakan ini ===
+    // === Web App URL (Apps Script) — gunakan URL anda ===
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxx-p5Oit0R8a116e207P93GyYkKzQQUKBSYQDq8lUKKBXbO57ovJlvBz3VoB8kbb1D/exec";
 
     // === Konfigurasi lokasi & masa ===
@@ -80,116 +89,124 @@
     const bil = document.getElementById('bil');
     const anakFields = document.getElementById('anakFields');
     const hari = document.getElementById('hari');
+    const hariHint = document.getElementById('hariHint');
     const tarikh = document.getElementById('tarikh');
     const lokasi = document.getElementById('lokasi');
     const masa = document.getElementById('masa');
     const statusBox = document.getElementById('status');
     const submitBtn = document.getElementById('submitBtn');
+    const copyWaBtn = document.getElementById('copyWa');
+    const dlCsvBtn = document.getElementById('dlCsv');
 
     // === Util ===
-    function setOptions(select, arr){
-      select.innerHTML = '';
-      const ph = document.createElement('option');
-      ph.value=''; ph.textContent='-- pilih --'; ph.disabled=true; ph.selected=true;
-      select.appendChild(ph);
-      arr.forEach(v=>{ const o=document.createElement('option'); o.textContent=o.value=v; select.appendChild(o); });
-    }
-    function updateLokasiMasa(){
-      if(hari.value === 'bekerja'){
-        setOptions(lokasi, LOKASI_BEKERJA);
-        setOptions(masa, ['9:00–1:00','2:00–4:00']);
-      } else {
-        setOptions(lokasi, LOKASI_CUTI);
-        setOptions(masa, ['9:00–1:00']);
-      }
-    }
-    function showStatus(text, ok=true){
-      statusBox.classList.add('show');
-      statusBox.style.borderColor = ok ? '#22c55e' : '#ef4444';
-      statusBox.textContent = text;
-    }
-    function clearStatus(){
-      statusBox.classList.remove('show');
-      statusBox.textContent = '';
-    }
+    const HARI = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+    function setOptions(select, arr){ select.innerHTML = ''; const ph = document.createElement('option'); ph.value=''; ph.textContent='-- pilih --'; ph.disabled=true; ph.selected=true; select.appendChild(ph); arr.forEach(v=>{ const o=document.createElement('option'); o.textContent=o.value=v; select.appendChild(o); }); }
+    function updateLokasiMasa(){ if(hari.value === 'bekerja'){ setOptions(lokasi, LOKASI_BEKERJA); setOptions(masa, ['9:00–1:00','2:00–4:00']); } else { setOptions(lokasi, LOKASI_CUTI); setOptions(masa, ['9:00–1:00']); } }
+    function showStatus(text, ok=true){ statusBox.classList.add('show'); statusBox.classList.toggle('ok', ok); statusBox.classList.toggle('err', !ok); statusBox.textContent = text; }
+    function clearStatus(){ statusBox.classList.remove('show','ok','err'); statusBox.textContent = ''; }
+    function dowOfInputDate(){ const v=tarikh.value; if(!v) return null; const d=new Date(v+'T00:00:00'); return d.getDay(); }
+    function isWorkday(dow){ return [0,1,2,3,4].includes(dow); } // Ahad–Khamis
+    function isWeekend(dow){ return [5,6].includes(dow); } // Jumaat–Sabtu
+    function normalizePhone(s=''){ return String(s).replace(/\D+/g,'').replace(/^0/,'60'); }
+    function csvEsc(s){ const t=String(s).replaceAll('"','""'); return /[",\n]/.test(t) ? '"'+t+'"' : t; }
+
+    // === Duplicate guard (client) ===
+    const SUBMITTED_KEYS_KEY = 'mr_sia_submitted_keys'; // set of 'tel|tarikh'
+    function getSubmittedKeys(){ try{return new Set(JSON.parse(localStorage.getItem(SUBMITTED_KEYS_KEY)||'[]'));}catch(e){return new Set();} }
+    function addSubmittedKey(k){ const s=getSubmittedKeys(); s.add(k); localStorage.setItem(SUBMITTED_KEYS_KEY, JSON.stringify(Array.from(s))); }
+
+    // === Outbox retry (offline/failed) ===
+    const OUTBOX_KEY = 'mr_sia_outbox';
+    function loadOutbox(){ try{return JSON.parse(localStorage.getItem(OUTBOX_KEY)||'[]');}catch(e){return [];} }
+    function saveOutbox(arr){ localStorage.setItem(OUTBOX_KEY, JSON.stringify(arr)); }
+    async function flushOutbox(){ let q=loadOutbox(); if(!q.length) return; for(let i=0;i<q.length;i++){ try{ await postToSheet(q[i]); q[i]._sent=true; }catch(e){ console.warn('Retry gagal item', i, e); } } q=q.filter(x=>!x._sent); saveOutbox(q); if(q.length===0) showStatus('Semua item tertunggak berjaya dihantar.', true); }
+    window.addEventListener('online', flushOutbox);
 
     // === Dinamik: umur anak ===
-    bil.addEventListener('change', ()=>{
-      anakFields.innerHTML='';
-      const n = parseInt(bil.value||'0',10);
-      for(let i=1;i<=n;i++){
-        const wrap = document.createElement('div');
-        wrap.className='row';
-        wrap.innerHTML = `
+    bil.addEventListener('change', ()=>{ anakFields.innerHTML=''; const n = parseInt(bil.value||'0',10); for(let i=1;i<=n;i++){ const wrap = document.createElement('div'); wrap.className='row'; wrap.innerHTML = `
           <label for="umur${i}">Umur Anak ${i} (bulan)</label>
           <input type="number" id="umur${i}" min="6" max="59" required />
-        `;
-        anakFields.appendChild(wrap);
-      }
-    });
+        `; anakFields.appendChild(wrap); } });
 
-    // === Tukar hari -> isi lokasi & masa ===
-    hari.addEventListener('change', updateLokasiMasa);
+    // === Tukar hari/tarikh -> isi lokasi/masa + hint ===
+    hari.addEventListener('change', ()=>{ updateLokasiMasa(); validateHariTarikhHint(); });
+    tarikh.addEventListener('change', validateHariTarikhHint);
+    function validateHariTarikhHint(){ const dow = dowOfInputDate(); if(dow===null){ hariHint.textContent=''; return; } const htxt = HARI[dow]; if(hari.value==='bekerja' && !isWorkday(dow)){ hariHint.textContent = `Tarikh dipilih ialah ${htxt}. Pilihan hari sekarang: Hari bekerja (Ahad–Khamis). Sila pilih tarikh Ahad–Khamis.`; } else if(hari.value==='cuti' && !isWeekend(dow)){ hariHint.textContent = `Tarikh dipilih ialah ${htxt}. Pilihan hari sekarang: Hari cuti minggu (Jumaat–Sabtu). Sila pilih tarikh Jumaat atau Sabtu.`; } else { hariHint.textContent=''; } }
 
     // === Init ===
-    window.addEventListener('DOMContentLoaded', ()=>{
-      updateLokasiMasa();
+    window.addEventListener('DOMContentLoaded', ()=>{ updateLokasiMasa(); flushOutbox(); });
+
+    // === WhatsApp & CSV helper (last payload) ===
+    let lastPayload = null;
+    copyWaBtn.addEventListener('click', ()=>{
+      if(!lastPayload){ showStatus('Belum ada data untuk disalin. Hantar borang dahulu.', false); return; }
+      const r = lastPayload;
+      const txt = [
+        '*Temujanji MR SIA – PKD Kuala Terengganu*',
+        `Nama: ${r.nama}`,
+        `Telefon: ${r.telefon}`,
+        `Tempat bertugas: ${r.bertugas}`,
+        `Bil anak: ${r.bilAnak} | Umur (bulan): ${(r.umur||[]).join(', ')}`,
+        `Pilihan hari: ${r.pilihanHari}`,
+        `Tarikh: ${r.tarikh}`,
+        `Masa: ${r.masa}`,
+        `Lokasi: ${r.lokasi}`
+      ].join('\n');
+      navigator.clipboard.writeText(txt).then(()=> showStatus('Teks WhatsApp disalin.')).catch(()=> showStatus('Gagal salin WhatsApp.', false));
+    });
+
+    dlCsvBtn.addEventListener('click', ()=>{
+      if(!lastPayload){ showStatus('Belum ada data untuk dimuat turun. Hantar borang dahulu.', false); return; }
+      const r = lastPayload;
+      const header = ['timestamp','nama','telefon','bertugas','bilAnak','umur1','umur2','umur3','pilihanHari','tarikh','masa','lokasi'];
+      const row = [r.timestamp,r.nama,r.telefon,r.bertugas,r.bilAnak,(r.umur[0]||''),(r.umur[1]||''),(r.umur[2]||''),r.pilihanHari,r.tarikh,r.masa,r.lokasi];
+      const csv = header.join(',')+'\n'+row.map(csvEsc).join(',');
+      const blob = new Blob([csv],{type:'text/csv;charset=utf-8'});
+      const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='temujanji_mr_sia.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     });
 
     // === Submit ===
     form.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      clearStatus();
+      e.preventDefault(); clearStatus();
 
-      // Validasi ringkas
-      if(!form.checkValidity()){
-        showStatus('Sila lengkapkan semua medan yang diperlukan.', false);
-        return;
-      }
-      const n = parseInt(bil.value||'0',10);
-      if(!n || n<1 || n>3){ showStatus('Bilangan anak mesti 1–3.', false); return; }
+      // Validasi asas
+      if(!form.checkValidity()){ showStatus('Sila lengkapkan semua medan yang diperlukan.', false); return; }
+      const n = parseInt(bil.value||'0',10); if(!n || n<1 || n>3){ showStatus('Bilangan anak mesti 1–3.', false); return; }
+      const umur = []; for(let i=1;i<=n;i++){ const v = parseInt(document.getElementById('umur'+i).value||'0',10); if(!v || v<6 || v>59){ showStatus('Umur anak mesti 6–59 bulan.', false); return; } umur.push(v); }
+      const dow = dowOfInputDate(); if(dow===null){ showStatus('Sila pilih tarikh.', false); return; }
+      if(hari.value==='bekerja' && !isWorkday(dow)){ showStatus('Tarikh tidak sepadan: Hari bekerja ialah Ahad–Khamis.', false); return; }
+      if(hari.value==='cuti' && !isWeekend(dow)){ showStatus('Tarikh tidak sepadan: Cuti minggu ialah Jumaat–Sabtu.', false); return; }
 
-      const umur = [];
-      for(let i=1;i<=n;i++){
-        const v = parseInt(document.getElementById('umur'+i).value||'0',10);
-        if(!v || v<6 || v>59){ showStatus('Umur anak mesti 6–59 bulan.', false); return; }
-        umur.push(v);
-      }
-
-      // Kumpul data untuk dihantar
-      const data = {
-        timestamp: new Date().toISOString(),
+      const data = { timestamp: new Date().toISOString(),
         nama: document.getElementById('nama').value.trim(),
         telefon: document.getElementById('telefon').value.trim(),
         bertugas: document.getElementById('bertugas').value.trim(),
-        bilAnak: n,
-        umur: umur,
+        bilAnak: n, umur,
         pilihanHari: (hari.value === 'bekerja') ? 'Hari bekerja (Ahad–Khamis)' : 'Hari cuti minggu (Jumaat–Sabtu)',
-        tarikh: tarikh.value,
-        masa: masa.value,
-        lokasi: lokasi.value
+        tarikh: tarikh.value, masa: masa.value, lokasi: lokasi.value
       };
 
-      // Hantar ke Apps Script (Google Sheet)
+      // Cegah rekod berganda (client): telefon+tarikh
+      const dupKey = normalizePhone(data.telefon)+'|'+data.tarikh;
+      const seen = getSubmittedKeys();
+      if(seen.has(dupKey)){ showStatus('Rekod berganda dikesan (telefon+tarikh).', false); return; }
+
+      // Hantar
       submitBtn.disabled = true; submitBtn.textContent = 'Menghantar...';
-      try{
-        const res = await fetch(WEB_APP_URL, {
-          method: 'POST',
-          // text/plain elak preflight CORS; Apps Script masih boleh JSON.parse(e.postData.contents)
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(data)
-        });
-        if(!res.ok){ throw new Error('Status ' + res.status); }
-        await res.text(); // optional
-        showStatus('Berjaya dihantar ke Google Sheet.');
-        form.reset(); anakFields.innerHTML=''; updateLokasiMasa();
-      }catch(err){
-        console.error(err);
-        showStatus('Gagal hantar. Semak Web App access (Anyone with link) & cuba lagi.', false);
-      }finally{
-        submitBtn.disabled = false; submitBtn.textContent = 'Hantar';
-      }
+      try{ await postToSheet(data); addSubmittedKey(dupKey); lastPayload = data; showStatus('Berjaya dihantar ke Google Sheet.'); form.reset(); anakFields.innerHTML=''; updateLokasiMasa(); }
+      catch(err){ console.error(err); // simpan ke outbox
+        const q = loadOutbox(); q.push(data); saveOutbox(q);
+        showStatus('Gagal hantar. Data disimpan & akan cuba dihantar semula bila online.', false);
+      }finally{ submitBtn.disabled = false; submitBtn.textContent = 'Hantar'; }
     });
+
+    async function postToSheet(payload){
+      const res = await fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+      if(!res.ok) throw new Error('Status '+res.status);
+      const text = await res.text();
+      if(/duplicate/i.test(text)) throw new Error('Duplicate');
+      return text;
+    }
   </script>
 </body>
 </html>
