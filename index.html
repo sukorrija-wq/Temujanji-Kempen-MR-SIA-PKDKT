@@ -73,8 +73,9 @@
 
       <div class="btn-row">
         <button class="btn" id="submitBtn" type="submit">Hantar</button>
-        <a class="btnlink" id="waLink" target="_blank" rel="noopener">Hantar WhatsApp</a>
+        <a class="btnlink" id="waLink" target="_blank" rel="noopener">Hantar ke Whatsapp</a>
         <button type="button" id="addCal">Tambah ke Calendar (.ics)</button>
+        <button type="button" id="resetForm">Reset</button>
       </div>
 
       <div id="status" class="status"></div>
@@ -117,6 +118,7 @@
     const submitBtn = document.getElementById('submitBtn');
     const waLink = document.getElementById('waLink');
     const addCalBtn = document.getElementById('addCal');
+    const resetBtn = document.getElementById('resetForm');
     const ticket = document.getElementById('ticket');
     const t_nama = document.getElementById('t_nama');
     const t_tel = document.getElementById('t_tel');
@@ -258,6 +260,19 @@
       }finally{
         submitBtn.disabled = false; submitBtn.textContent = 'Hantar';
       }
+    });
+
+    
+    // Reset form action
+    resetBtn.addEventListener('click', ()=>{
+      form.reset();
+      anakFields.innerHTML='';
+      updateLokasiMasa();
+      clearStatus();
+      ticket.classList.remove('show');
+      hariHint.textContent='';
+      lastPayload = null;
+      waLink.removeAttribute('href');
     });
 
     // Add-to-Calendar action
