@@ -5,25 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Temujanji MR SIA – PKD Kuala Terengganu</title>
   <style>
-    body{margin:0;font-family:system-ui,Arial;background:#0f172a;color:#e5e7eb}
-    .wrap{max-width:640px;margin:0 auto;padding:20px}
+    :root { --bg:#0f172a; --card:#0b1220; --ring:#334155; --text:#e5e7eb; --muted:#94a3b8; --primary:#38bdf8; }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial}
+    .wrap{max-width:680px;margin:0 auto;padding:20px}
     h1{font-size:20px;margin:0 0 10px}
-    .card{background:#0b1220;border:1px solid #334155;border-radius:12px;padding:14px}
-    label{display:block;margin:10px 0 4px;color:#94a3b8}
-    input,select,button{width:100%;padding:10px;border-radius:8px;border:1px solid #334155;background:#0a1020;color:#e5e7eb}
-    button{cursor:pointer;font-weight:600}
-    .btn{background:#38bdf8;color:#06213a;border:none;margin-top:12px}
+    .card{background:var(--card);border:1px solid var(--ring);border-radius:12px;padding:14px}
+    label{display:block;margin:10px 0 4px;color:var(--muted)}
+    input,select,button{width:100%;padding:10px;border-radius:8px;border:1px solid var(--ring);background:#0a1020;color:var(--text)}
+    button{cursor:pointer;font-weight:700}
+    .btn{background:var(--primary);color:#06213a;border:none;margin-top:14px}
     .row{margin-top:8px}
-    footer{margin:16px 0;text-align:center;color:#94a3b8}
-    .help{font-size:12px;color:#94a3b8}
+    .help{color:var(--muted);font-size:12px}
+    .status{margin-top:10px;padding:10px;border-radius:8px;border:1px solid var(--ring);display:none}
+    .status.show{display:block}
+    footer{margin:16px 0;text-align:center;color:var(--muted)}
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Temujanji Kempen MR SIA – PKD Kuala Terengganu</h1>
-    <p class="help">Syarat umur: Kanak-kanak 6–59 bulan (tarikh lahir antara 1/8/2020 hingga 31/1/2025).</p>
+    <p class="help">Syarat umur: Kanak-kanak 6–59 bulan.</p>
 
-    <form id="form" class="card">
+    <form id="form" class="card" novalidate>
       <label for="nama">Nama penuh</label>
       <input id="nama" required placeholder="Contoh: Ahmad bin Ali"/>
 
@@ -36,9 +39,7 @@
       <label for="bil">Bilangan anak (6–59 bulan)</label>
       <select id="bil" required>
         <option value="" disabled selected>Pilih bilangan</option>
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
+        <option>1</option><option>2</option><option>3</option>
       </select>
 
       <div id="anakFields" class="row"></div>
@@ -58,45 +59,61 @@
       <label for="masa">Slot masa</label>
       <select id="masa" required></select>
 
-      <button class="btn" type="submit">Hantar</button>
+      <button class="btn" id="submitBtn" type="submit">Hantar</button>
+
+      <div id="status" class="status"></div>
     </form>
 
     <footer>Powered by <strong>Staff PKD Kuala Terengganu</strong></footer>
   </div>
 
   <script>
-    // === Konfigurasi ringkas ===
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxb_M-y8UXguhPu4XV_0OL2zjn-KTDNyVALh_rCBEWTPBdsZLjjdLxhGSe-tc_uGlmG/exec"; // URL Apps Script
+    // === Web App URL (Apps Script) — anda sudah sediakan ini ===
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxx-p5Oit0R8a116e207P93GyYkKzQQUKBSYQDq8lUKKBXbO57ovJlvBz3VoB8kbb1D/exec";
+
+    // === Konfigurasi lokasi & masa ===
     const LOKASI_BEKERJA = ['KK Hiliran','KK Manir','KK Chendering','KK UTC','KK Paya Datu'];
-    const LOKASI_CUTI = ['KK Hiliran'];
+    const LOKASI_CUTI    = ['KK Hiliran'];
 
     // === Elemen ===
     const form = document.getElementById('form');
     const bil = document.getElementById('bil');
     const anakFields = document.getElementById('anakFields');
     const hari = document.getElementById('hari');
+    const tarikh = document.getElementById('tarikh');
     const lokasi = document.getElementById('lokasi');
     const masa = document.getElementById('masa');
+    const statusBox = document.getElementById('status');
+    const submitBtn = document.getElementById('submitBtn');
 
     // === Util ===
     function setOptions(select, arr){
       select.innerHTML = '';
-      const ph = document.createElement('option'); ph.value=''; ph.textContent='-- pilih --'; ph.disabled=true; ph.selected=true;
+      const ph = document.createElement('option');
+      ph.value=''; ph.textContent='-- pilih --'; ph.disabled=true; ph.selected=true;
       select.appendChild(ph);
       arr.forEach(v=>{ const o=document.createElement('option'); o.textContent=o.value=v; select.appendChild(o); });
     }
-
     function updateLokasiMasa(){
       if(hari.value === 'bekerja'){
         setOptions(lokasi, LOKASI_BEKERJA);
         setOptions(masa, ['9:00–1:00','2:00–4:00']);
-      }else{
+      } else {
         setOptions(lokasi, LOKASI_CUTI);
         setOptions(masa, ['9:00–1:00']);
       }
     }
+    function showStatus(text, ok=true){
+      statusBox.classList.add('show');
+      statusBox.style.borderColor = ok ? '#22c55e' : '#ef4444';
+      statusBox.textContent = text;
+    }
+    function clearStatus(){
+      statusBox.classList.remove('show');
+      statusBox.textContent = '';
+    }
 
-    // === Dinamik umur anak ===
+    // === Dinamik: umur anak ===
     bil.addEventListener('change', ()=>{
       anakFields.innerHTML='';
       const n = parseInt(bil.value||'0',10);
@@ -105,7 +122,8 @@
         wrap.className='row';
         wrap.innerHTML = `
           <label for="umur${i}">Umur Anak ${i} (bulan)</label>
-          <input type="number" id="umur${i}" min="6" max="59" required />`;
+          <input type="number" id="umur${i}" min="6" max="59" required />
+        `;
         anakFields.appendChild(wrap);
       }
     });
@@ -113,22 +131,32 @@
     // === Tukar hari -> isi lokasi & masa ===
     hari.addEventListener('change', updateLokasiMasa);
 
-    // === Init pada load ===
+    // === Init ===
     window.addEventListener('DOMContentLoaded', ()=>{
       updateLokasiMasa();
     });
 
     // === Submit ===
-    form.addEventListener('submit', (e)=>{
+    form.addEventListener('submit', async (e)=>{
       e.preventDefault();
+      clearStatus();
 
-      const n = parseInt(bil.value||'0',10);
-      const umur = Array.from({length:n}, (_,i)=> parseInt(document.getElementById('umur'+(i+1)).value||'0',10));
-      if(!n || umur.some(u=>!u || u<6 || u>59)){
-        alert('Sila masukkan umur anak 6–59 bulan.');
+      // Validasi ringkas
+      if(!form.checkValidity()){
+        showStatus('Sila lengkapkan semua medan yang diperlukan.', false);
         return;
       }
+      const n = parseInt(bil.value||'0',10);
+      if(!n || n<1 || n>3){ showStatus('Bilangan anak mesti 1–3.', false); return; }
 
+      const umur = [];
+      for(let i=1;i<=n;i++){
+        const v = parseInt(document.getElementById('umur'+i).value||'0',10);
+        if(!v || v<6 || v>59){ showStatus('Umur anak mesti 6–59 bulan.', false); return; }
+        umur.push(v);
+      }
+
+      // Kumpul data untuk dihantar
       const data = {
         timestamp: new Date().toISOString(),
         nama: document.getElementById('nama').value.trim(),
@@ -137,18 +165,30 @@
         bilAnak: n,
         umur: umur,
         pilihanHari: (hari.value === 'bekerja') ? 'Hari bekerja (Ahad–Khamis)' : 'Hari cuti minggu (Jumaat–Sabtu)',
-        tarikh: document.getElementById('tarikh').value,
+        tarikh: tarikh.value,
         masa: masa.value,
         lokasi: lokasi.value
       };
 
-      // Hantar ke Google Sheet (Apps Script)
-      fetch(WEB_APP_URL, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
-      })
-      .then(r=>r.text())
-      .then(()=>{ alert('Berjaya dihantar ke Google Sheet.'); form.reset(); anakFields.innerHTML=''; updateLokasiMasa(); })
-      .catch(err=>{ console.error(err); alert('Gagal hantar. Semak tetapan Web App & cuba lagi.'); });
+      // Hantar ke Apps Script (Google Sheet)
+      submitBtn.disabled = true; submitBtn.textContent = 'Menghantar...';
+      try{
+        const res = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          // text/plain elak preflight CORS; Apps Script masih boleh JSON.parse(e.postData.contents)
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(data)
+        });
+        if(!res.ok){ throw new Error('Status ' + res.status); }
+        await res.text(); // optional
+        showStatus('Berjaya dihantar ke Google Sheet.');
+        form.reset(); anakFields.innerHTML=''; updateLokasiMasa();
+      }catch(err){
+        console.error(err);
+        showStatus('Gagal hantar. Semak Web App access (Anyone with link) & cuba lagi.', false);
+      }finally{
+        submitBtn.disabled = false; submitBtn.textContent = 'Hantar';
+      }
     });
   </script>
 </body>
