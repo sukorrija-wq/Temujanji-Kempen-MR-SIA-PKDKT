@@ -38,8 +38,8 @@
     <p class="help">Syarat umur: Kanak-kanak 6–59 bulan.</p>
 
     <form id="form" class="card" novalidate>
-      <label for="nama">Nama penuh</label>
-      <input id="nama" required placeholder="Contoh: Ahmad bin Ali"/>
+      <label for="nama">Nama Penjaga</label>
+      <input id="nama" required placeholder="Contoh: Siti Aisyah binti Ahmad"/>
 
       <label for="telefon">No. telefon</label>
       <input id="telefon" required placeholder="Contoh: 0123456789"/>
@@ -84,7 +84,7 @@
     <div id="ticket" class="card ticket">
       <div class="title">Kad Temujanji</div>
       <div class="grid">
-        <div><span class="subtle">Nama</span><br><b id="t_nama"></b></div>
+        <div><span class="subtle">Nama Penjaga</span><br><b id="t_nama"></b></div>
         <div><span class="subtle">Telefon</span><br><b id="t_tel"></b></div>
         <div><span class="subtle">Tarikh</span><br><b id="t_tarikh"></b></div>
         <div><span class="subtle">Masa</span><br><b id="t_masa"></b></div>
@@ -136,10 +136,10 @@
     function dowOfInputDate(){ const v=tarikh.value; if(!v) return null; const d=new Date(v+'T00:00:00'); return d.getDay(); }
     function isWorkday(dow){ return [0,1,2,3,4].includes(dow); } // Ahad–Khamis
     function isWeekend(dow){ return [5,6].includes(dow); } // Jumaat–Sabtu
+    function normalizePhone(s=''){ return String(s).replace(/\D+/g,'').replace(/^0/,'60'); }
 
     // === Duplicate guard (client) ===
     const SUBMITTED_KEYS_KEY = 'mr_sia_submitted_keys'; // set of 'tel|tarikh'
-    function normalizePhone(s=''){ return String(s).replace(/\D+/g,'').replace(/^0/,'60'); }
     function getSubmittedKeys(){ try{return new Set(JSON.parse(localStorage.getItem(SUBMITTED_KEYS_KEY)||'[]'));}catch(e){return new Set();} }
     function addSubmittedKey(k){ const s=getSubmittedKeys(); s.add(k); localStorage.setItem(SUBMITTED_KEYS_KEY, JSON.stringify(Array.from(s))); }
 
@@ -161,7 +161,7 @@
     function buildWAText(r){
       return [
         '*Temujanji MR SIA – PKD Kuala Terengganu*',
-        `Nama: ${r.nama}`,
+        `Nama Penjaga: ${r.nama}`,
         `Telefon: ${r.telefon}`,
         `Tempat bertugas: ${r.bertugas}`,
         `Bil anak: ${r.bilAnak} | Umur (bulan): ${(r.umur||[]).join(', ')}`,
@@ -262,7 +262,6 @@
       }
     });
 
-    
     // Reset form action
     resetBtn.addEventListener('click', ()=>{
       form.reset();
